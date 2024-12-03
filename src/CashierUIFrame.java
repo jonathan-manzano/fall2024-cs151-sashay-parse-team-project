@@ -215,6 +215,7 @@ public class CashierUIFrame extends Frame{
 		
 		setTitle("Cashier Window");
 		pack();
+		setLocationRelativeTo(null);
 		setVisible(true);
 	}
 	

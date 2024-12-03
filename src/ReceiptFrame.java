@@ -39,7 +39,7 @@ public class ReceiptFrame extends Frame{
 		
 		this.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent windowEvent){
-				System.exit(0);
+				dispose();
 			}        
 		});
 		

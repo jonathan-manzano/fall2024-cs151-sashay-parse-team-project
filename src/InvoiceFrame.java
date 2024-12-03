@@ -123,14 +123,6 @@ public class InvoiceFrame extends Frame{
 		invoiceControlPanel.add(payPrintReceiptButton, c);
 		
 		
-		
-		
-		
-		
-		
-		
-		
-		
 		c.gridx = 0;
 		c.gridy = 0;
 		add(invoiceDataPanel, c);
@@ -146,6 +138,12 @@ public class InvoiceFrame extends Frame{
 		
 		setTitle("Invoice Window");
 		pack();
+		
+		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+	    int x = (int) ((dimension.getWidth() - getWidth()));
+	    int y = (int) ((dimension.getHeight() - getHeight()) / 2);
+	    setLocation(x, y);
+	    
 		setVisible(true);
 	}
 	
