@@ -9,7 +9,7 @@ public class InvoiceFrame extends Frame{
 	public InvoiceFrame() {
 		Color defaultBorderColor = new Color(200, 221, 242);
 		
-		// dummy data
+		// dummy data (deletable)
 		Store store = new Store("COSTCO Wholesale", "San Jose", "CA", "(409) 123-9876", 5.0);
 		String[] colNames = {"Item No.", "Product", "Quantity", "Price"};
 		ArrayList<Product> products = new ArrayList<Product>();
@@ -32,20 +32,19 @@ public class InvoiceFrame extends Frame{
 			invoiceTableData += StringAligner.centerAlignString( "$" + String.valueOf(p.getPrice()), colWidth);
 			invoiceTableData += "\n";
 		}
+		// end of dummy data
 		
 		
 		setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		
-		c.gridx = 0; // Column 0
-		c.gridy = 0; // Row 0
-		c.fill = GridBagConstraints.BOTH; // Fill the cell in both directions
-		c.insets = new Insets(5, 5, 5, 5); // Add padding around the component
+		c.fill = GridBagConstraints.BOTH;
+		c.insets = new Insets(5, 5, 5, 5);
 		
 		
+		// Invoice Text Area
 		JTextArea invoiceTextArea = new JTextArea(10, 20);
 		invoiceTextArea.setFont(new Font("Courier New", Font.PLAIN, 12));
-		invoiceTextArea.setText(invoiceTableData);
 		invoiceTextArea.setEditable(false);
 		
 		JPanel invoiceDataPanel = new JPanel();
@@ -57,26 +56,40 @@ public class InvoiceFrame extends Frame{
 		c.gridy = 0;
 		add(invoiceDataPanel, c);
 		
+		// dummy data (deletable)
+		invoiceTextArea.setText(invoiceTableData);
+		
+		// Invoice Control Panel
+		JPanel invoiceControlPanel = new JPanel();
+		invoiceControlPanel.setLayout(new GridBagLayout());
+		invoiceControlPanel.setBorder(BorderFactory.createTitledBorder("Invoice Control"));
+		
+		// components
 		JLabel salesTaxLabel = new JLabel("Sales Tax: ");
 		JLabel discountLabel = new JLabel("Discount: ");
 		JLabel discountCheckBoxLabel = new JLabel("Apply Discount: ");
 		JLabel discountedPriceLabel = new JLabel("Discounted: ");
 		JLabel totalPriceLabel = new JLabel("Total: ");
 		JLabel grandTotalPriceLabel = new JLabel("Grand Price: ");
-		
 		JTextField salesTaxTextField = new JTextField(20);
 		JTextField discountTextField = new JTextField(20);
 		JCheckBox discountCheckBox = new JCheckBox();
 		JTextField discountedPriceTextField = new JTextField(20);
 		JTextField totalPriceTextField = new JTextField(20);
 		JTextField grandTotalPriceTextField = new JTextField(20);
-		
 		JButton payPrintReceiptButton = new JButton("Pay and Print Receipt");
 		
-		JPanel invoiceControlPanel = new JPanel();
-		invoiceControlPanel.setLayout(new GridBagLayout());
-		invoiceControlPanel.setBorder(BorderFactory.createTitledBorder("Invoice Control"));
-	
+		salesTaxTextField.setEditable(false);
+		discountTextField.setEditable(false);
+		totalPriceTextField.setEditable(false);
+		discountedPriceTextField.setEditable(false);
+		grandTotalPriceTextField.setEditable(false);
+		
+		// dummy data (deletable)
+		salesTaxTextField.setText(store.getLocation());
+		discountTextField.setText(store.getTax().toString() + "%");
+		// end of dummy data
+		
 		c.gridy = 0;
 		invoiceControlPanel.add(salesTaxLabel, c);
 		
@@ -95,15 +108,10 @@ public class InvoiceFrame extends Frame{
 		c.gridy++;
 		invoiceControlPanel.add(grandTotalPriceLabel, c);
 		
-		salesTaxTextField.setText(store.getLocation());
-		salesTaxTextField.setEditable(false);
-		
 		c.gridx = 1;
 		c.gridy = 0;
 		invoiceControlPanel.add(salesTaxTextField, c);
 
-		discountTextField.setText(store.getTax().toString() + "%");
-		discountTextField.setEditable(false);
 		c.gridy++;
 		invoiceControlPanel.add(discountTextField, c); 
 		
@@ -122,6 +130,7 @@ public class InvoiceFrame extends Frame{
 		c.gridy++;
 		invoiceControlPanel.add(payPrintReceiptButton, c);
 		
+		// Add Panels to Frame
 		
 		c.gridx = 0;
 		c.gridy = 0;
@@ -129,6 +138,22 @@ public class InvoiceFrame extends Frame{
 		
 		c.gridy++;
 		add(invoiceControlPanel, c);
+		
+		
+		// TO BE DONE
+		
+		discountCheckBox.addActionListener( e -> {
+			// updates discounted price
+		});
+		
+		payPrintReceiptButton.addActionListener( e -> {
+			// opens receipt window
+			new ReceiptFrame(); // constructor should accept data (Product & Quantity Array)
+			// clears invoice?
+			
+		});
+		
+		
 		
 		this.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent windowEvent){

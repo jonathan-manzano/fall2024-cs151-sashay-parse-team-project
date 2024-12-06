@@ -6,35 +6,27 @@ import java.awt.event.WindowEvent;
 
 public class CashierUIFrame extends Frame{
 	
+	InvoiceFrame invoiceFrame;
+	
 	public CashierUIFrame() {
 		Color defaultBorderColor = new Color(200, 221, 242);
 		
-		GridBagLayout layout = new GridBagLayout();
-		setLayout(layout);
+		setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		
-		c.gridx = 0; // Column 0
-		c.gridy = 0; // Row 0
-		//c.gridwidth = 1; // Occupies 1 column
-		//c.gridheight = 1; // Occupies 1 row
-		//c.weightx = 1.0; // Relative horizontal weight
-		//c.weighty = 1.0; // Relative vertical weight
-		c.fill = GridBagConstraints.BOTH; // Fill the cell in both directions
-		//c.anchor = GridBagConstraints.CENTER; // Anchor the component in the center of the cell
-		c.insets = new Insets(5, 5, 5, 5); // Add padding around the component
+		c.fill = GridBagConstraints.BOTH;
+		c.insets = new Insets(5, 5, 5, 5);
 
+		// Login Panel
+		JPanel loginPanel = new JPanel(new GridBagLayout());
+		loginPanel.setBorder(BorderFactory.createTitledBorder("Login"));
+		
+		// components
 		JLabel firstNameLabel = new JLabel("First Name: ");
 		JLabel lastNameLabel = new JLabel("Last Name: ");
-		
 		JTextField firstNameTextField = new JTextField(20);		
 		JTextField lastNameTextField = new JTextField(20);
-		
 		JButton startShiftButton = new JButton("Start Shift");
-		// startShiftButton.setBackground(Color.GREEN);
-		
-		JPanel loginPanel = new JPanel(new GridBagLayout());
-		
-		loginPanel.setBorder(BorderFactory.createTitledBorder("Login"));
 		
 		c.gridx = 0;
 		c.gridy = 0;
@@ -61,27 +53,23 @@ public class CashierUIFrame extends Frame{
 		c.gridwidth = 1;
 		loginPanel.add(startShiftButton, c);
 		
-		c.gridx = 0;
-		c.gridy = 0;
-		add(loginPanel, c);
 		
-		
-		
-		
-		JLabel employeeLabel = new JLabel("Employee: ");
-		JLabel dateTimeLabel = new JLabel("Date: ");
-		
-		JTextField employeeTextField = new JTextField(20);
-		employeeTextField.setText("Clyde Joshua Delgado");
-		employeeTextField.setEditable(false);
-		JTextField dateTimeTextField = new JTextField(20);
-		dateTimeTextField.setText(java.time.LocalDateTime.now().toString());
-		dateTimeTextField.setEditable(false);
-		
-		JButton endShiftButton = new JButton("End Shift");
-		
+		// Shift Panel
 		JPanel shiftInfoPanel = new JPanel(new GridBagLayout());
 		shiftInfoPanel.setBorder(BorderFactory.createTitledBorder("Shift Information"));
+		
+		// components
+		JLabel employeeLabel = new JLabel("Employee: ");
+		JLabel dateTimeLabel = new JLabel("Date: ");
+		JTextField employeeTextField = new JTextField(20);
+		JTextField dateTimeTextField = new JTextField(20);
+		JButton endShiftButton = new JButton("End Shift");
+		
+		// placeholders (deletable)
+		employeeTextField.setText("Clyde Joshua Delgado");
+		employeeTextField.setEditable(false);
+		dateTimeTextField.setText(java.time.LocalDateTime.now().toString());
+		dateTimeTextField.setEditable(false);
 		
 		c.gridx = 0;
 		c.gridy = 0;
@@ -108,17 +96,14 @@ public class CashierUIFrame extends Frame{
 		c.gridwidth = 1;
 		shiftInfoPanel.add(endShiftButton, c);
 		
-		c.gridx = 0;
-		c.gridy = 1;
-		add(shiftInfoPanel, c);
 		
-		
-		
-		JButton loadInventoryButton = new JButton("Load Inventory");
-		JButton showInventoryButton = new JButton("Show Inventory");
-		
+		// Inventory Panel
 		JPanel inventoryPanel = new JPanel(new GridBagLayout());
 		inventoryPanel.setBorder(BorderFactory.createLineBorder(defaultBorderColor));
+		
+		// components
+		JButton loadInventoryButton = new JButton("Load Inventory");
+		JButton showInventoryButton = new JButton("Show Inventory");
 		
 		c.gridx = 0;
 		c.gridy = 0;
@@ -129,24 +114,17 @@ public class CashierUIFrame extends Frame{
 		c.gridy = 0;
 		c.gridwidth = 1;
 		inventoryPanel.add(showInventoryButton, c);
+
 		
-		c.gridx = 0;
-		c.gridy = 2;
-		add(inventoryPanel, c);
-		
-		
-		
-		
-		JButton addItemButton = new JButton("Add Item");
-		
-		JLabel productNumberLabel = new JLabel("Product Number: ");
-		JLabel quantityLabel = new JLabel("Quantity: ");
-		
-		JTextField productNumberTextField = new JTextField(20);		
-		JTextField quantityTextField = new JTextField(20);
-		
+		// Add Item Control Panel
 		JPanel addItemPanel = new JPanel(new GridBagLayout());
 		addItemPanel.setBorder(BorderFactory.createTitledBorder("Add Item"));
+		
+		JButton addItemButton = new JButton("Add Item");
+		JLabel productNumberLabel = new JLabel("Product Number: ");
+		JLabel quantityLabel = new JLabel("Quantity: ");
+		JTextField productNumberTextField = new JTextField(20);		
+		JTextField quantityTextField = new JTextField(20);
 		
 		c.gridx = 0;
 		c.gridy = 0;
@@ -169,7 +147,7 @@ public class CashierUIFrame extends Frame{
 		addItemPanel.add(addItemButton, c);
 		
 		
-		
+		// Remove Item Control Panel
 		JPanel removeItemPanel = new JPanel(new GridBagLayout());
 		removeItemPanel.setBorder(BorderFactory.createTitledBorder("Remove Item"));
 		
@@ -188,6 +166,7 @@ public class CashierUIFrame extends Frame{
 		removeItemPanel.add(removeItemButton, c);
 		
 		
+		// Joined Control Panel (Add and Remove)
 		JPanel controlPanel = new JPanel(new GridBagLayout());
 		controlPanel.setBorder(BorderFactory.createLineBorder(defaultBorderColor));
 		
@@ -201,9 +180,77 @@ public class CashierUIFrame extends Frame{
 		c.gridwidth = 1;
 		controlPanel.add(removeItemPanel, c);
 		
+		
+		// Add Panels to Frame
+		c.gridx = 0;
+		c.gridy = 0;
+		add(loginPanel, c);
+		
+		c.gridx = 0;
+		c.gridy = 1;
+		add(shiftInfoPanel, c);
+		
+		c.gridx = 0;
+		c.gridy = 2;
+		add(inventoryPanel, c);
+		
 		c.gridx = 0;
 		c.gridy = 3;
 		add(controlPanel, c);
+		
+		shiftInfoPanel.setVisible(false);
+		inventoryPanel.setVisible(false);
+		controlPanel.setVisible(false);
+		
+		// TO BE DONE
+		
+		startShiftButton.addActionListener( e -> {
+			// disables login panel
+			// initializes store?
+			// initializes employee
+			// opens invoice frame
+			invoiceFrame = new InvoiceFrame();
+			
+			loginPanel.setVisible(false);
+			shiftInfoPanel.setVisible(true);
+			inventoryPanel.setVisible(true);
+			controlPanel.setVisible(true);
+			
+			pack();
+		});
+		
+		endShiftButton.addActionListener( e -> {
+			// clears UI
+			// enables login panel
+			
+			invoiceFrame.dispose();
+			
+			loginPanel.setVisible(true);
+			shiftInfoPanel.setVisible(false);
+			inventoryPanel.setVisible(false);
+			controlPanel.setVisible(false);
+			
+			pack();
+		});
+		
+		loadInventoryButton.addActionListener( e -> {
+			// loads inventory from JSON file
+		});
+		
+		showInventoryButton.addActionListener( e -> {
+			// requires inventory to be loaded
+			// opens inventory frame
+			new InventoryFrame(); // constructor should accept data (Products Array)
+		});
+		
+		addItemButton.addActionListener( e -> {
+			// add item to invoice
+		});
+		
+		removeItemButton.addActionListener( e -> {
+			// remove item from invoice
+		});
+		
 		
 		
 		

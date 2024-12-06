@@ -17,13 +17,13 @@ public class ReceiptFrame extends Frame{
 		Store store = new Store("COSTCO Wholesale", "San Jose", "CA", "(409) 123-9876", 5.0);
 		Employee employee = new Employee("Clyde Joshua", "Delgado");
 		
-		GridBagLayout layout = new GridBagLayout();
-		setLayout(layout);
-		GridBagConstraints c = new GridBagConstraints();
+		setLayout(new GridBagLayout());
 		
-		c.gridx = 0; // Column 0
-		c.gridy = 0; // Row 0
-		c.fill = GridBagConstraints.BOTH; // Fill the cell in both directions
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0;
+		c.gridy = 0;
+		c.fill = GridBagConstraints.BOTH;
+		c.insets = new Insets(5, 5, 5, 5);
 		
 		JTextArea receiptTextArea = new JTextArea(19, 80); // actual formula, 19 + no. of items.
 		receiptTextArea.setFont(new Font("Courier New", Font.PLAIN, 12));

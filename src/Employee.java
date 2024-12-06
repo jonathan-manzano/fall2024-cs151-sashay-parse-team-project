@@ -10,7 +10,6 @@ public class Employee {
 		this.lastName = last;
 	}
 	
-	
 	public void setName (String first, String last) {
 		this.firstName = first;
 		this.lastName = last;
