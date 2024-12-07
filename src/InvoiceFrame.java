@@ -5,36 +5,19 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 public class InvoiceFrame extends Frame{
+	
+	Invoice invoiceData;
 
 	public InvoiceFrame() {
 		Color defaultBorderColor = new Color(200, 221, 242);
 		
 		// dummy data (deletable)
 		Store store = new Store("COSTCO Wholesale", "San Jose", "CA", "(409) 123-9876", 5.0);
-		String[] colNames = {"Item No.", "Product", "Quantity", "Price"};
-		ArrayList<Product> products = new ArrayList<Product>();
-		products.add(new Product("Lorem", 12345, 5.0, "Lorem Ipsum Dolor"));
-		products.add(new Product("Ipsum", 12353, 6.0, "Dolor Ipsum Lorem"));
-		products.add(new Product("Dolor", 23412, 2.0, "Ipsum Lorem Dolor"));
-		
+
+		invoiceData = new Invoice();
 		int colWidth = 20;
-		String invoiceTableData = "";
-		for (int i=0; i<colNames.length; i++) {
-			invoiceTableData += StringAligner.centerAlignString(colNames[i], colWidth);
-		}
-		invoiceTableData += "\n";
-		for (int i=0; i<products.size(); i++) {
-			Product p = products.get(i);
-			
-			invoiceTableData += StringAligner.centerAlignString(String.valueOf(i), colWidth);
-			invoiceTableData += StringAligner.centerAlignString(p.getName(), colWidth);
-			invoiceTableData += StringAligner.centerAlignString(String.valueOf(1), colWidth);
-			invoiceTableData += StringAligner.centerAlignString( "$" + String.valueOf(p.getPrice()), colWidth);
-			invoiceTableData += "\n";
-		}
 		// end of dummy data
-		
-		
+
 		setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		
@@ -57,7 +40,7 @@ public class InvoiceFrame extends Frame{
 		add(invoiceDataPanel, c);
 		
 		// dummy data (deletable)
-		invoiceTextArea.setText(invoiceTableData);
+		invoiceTextArea.setText(invoiceData.toTable(colWidth));
 		
 		// Invoice Control Panel
 		JPanel invoiceControlPanel = new JPanel();

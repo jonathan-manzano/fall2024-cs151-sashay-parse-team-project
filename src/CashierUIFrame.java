@@ -7,8 +7,13 @@ import java.awt.event.WindowEvent;
 public class CashierUIFrame extends Frame{
 	
 	InvoiceFrame invoiceFrame;
+	Employee employee;
+	Store store;
 	
 	public CashierUIFrame() {
+		employee = new Employee();
+		store = new Store();
+		
 		Color defaultBorderColor = new Color(200, 221, 242);
 		
 		setLayout(new GridBagLayout());
@@ -60,15 +65,14 @@ public class CashierUIFrame extends Frame{
 		
 		// components
 		JLabel employeeLabel = new JLabel("Employee: ");
-		JLabel dateTimeLabel = new JLabel("Date: ");
+		JLabel dateTimeLabel = new JLabel("Date/Time: ");
 		JTextField employeeTextField = new JTextField(20);
 		JTextField dateTimeTextField = new JTextField(20);
 		JButton endShiftButton = new JButton("End Shift");
 		
 		// placeholders (deletable)
-		employeeTextField.setText("Clyde Joshua Delgado");
 		employeeTextField.setEditable(false);
-		dateTimeTextField.setText(java.time.LocalDateTime.now().toString());
+		
 		dateTimeTextField.setEditable(false);
 		
 		c.gridx = 0;
@@ -207,7 +211,13 @@ public class CashierUIFrame extends Frame{
 		startShiftButton.addActionListener( e -> {
 			// disables login panel
 			// initializes store?
+			
 			// initializes employee
+			employee.setFirstName(firstNameTextField.getText());
+			employee.setLastName(lastNameTextField.getText());
+			employeeTextField.setText(employee.getName());
+			dateTimeTextField.setText(DateDecorator.readableFormat(java.time.LocalDateTime.now().toString()));
+			
 			// opens invoice frame
 			invoiceFrame = new InvoiceFrame();
 			
