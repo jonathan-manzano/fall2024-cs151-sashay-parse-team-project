@@ -3,12 +3,12 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-
 public class CashierUIFrame extends Frame{
 	
 	InvoiceFrame invoiceFrame;
 	Employee employee;
 	Store store;
+	Inventory inventory;
 	
 	public CashierUIFrame() {
 		employee = new Employee();
@@ -108,6 +108,8 @@ public class CashierUIFrame extends Frame{
 		// components
 		JButton loadInventoryButton = new JButton("Load Inventory");
 		JButton showInventoryButton = new JButton("Show Inventory");
+		
+		showInventoryButton.setEnabled(false);
 		
 		c.gridx = 0;
 		c.gridy = 0;
@@ -244,13 +246,30 @@ public class CashierUIFrame extends Frame{
 		});
 		
 		loadInventoryButton.addActionListener( e -> {
-			// loads inventory from JSON file
+			loadInventoryButton.setEnabled(false);
+			
+			inventory = new Inventory();
+			
+			inventory.add(new Product("NY Cheesecake", "01145", 19.99, "Whole 14 Inch"));
+	        inventory.add(new Product("Cookies", "01151", 10.25, "Chocolate Chip"));
+	        inventory.add(new Product("Apples", "01102", 5.55, "1 lb Fuji"));
+	        inventory.add(new Product("Clementines", "01136", 6.25, "3 lb Cuties"));
+	        inventory.add(new Product("Salad", "01294", 8.40, "Mediterranean Mix"));
+	        inventory.add(new Product("Chips", "01210", 4.99, "Lightly Salted"));
+	        inventory.add(new Product("Cereal", "01257", 5.39, "Cheerios"));
+	        inventory.add(new Product("Chocolate", "01211", 8.27, "Dove 60% Dark"));
+	        inventory.add(new Product("Laptop", "01389", 429.99, "Dell Inspiron"));
+	        inventory.add(new Product("TV", "01311", 1151.99, "LG 40 Inch OLED"));
+	        inventory.add(new Product("Shoes", "01429", 29.99, "Croc Flip Flops"));
+	        inventory.add(new Product("Shirt", "01484", 14.99, "Puma Golf Polo"));
+	        
+	        showInventoryButton.setEnabled(true);
 		});
 		
 		showInventoryButton.addActionListener( e -> {
 			// requires inventory to be loaded
 			// opens inventory frame
-			new InventoryFrame(); // constructor should accept data (Products Array)
+			new InventoryFrame(inventory.getProducts(), productNumberTextField.getText()); // constructor should accept data (Products Array)
 		});
 		
 		addItemButton.addActionListener( e -> {

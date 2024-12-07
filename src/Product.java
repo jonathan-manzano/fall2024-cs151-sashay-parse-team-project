@@ -1,11 +1,11 @@
 
 public class Product {
 	String name;
-	int code;
+	String code;
 	double price;
 	String description;
 
-	public Product(String name, int code, double price, String description) {
+	public Product(String name, String code, double price, String description) {
 		this.name = name;
 		this.code = code;
 		this.price = price;
@@ -20,11 +20,11 @@ public class Product {
 		this.name = name;
 	}
 
-	public int getCode() {
+	public String getCode() {
 		return code;
 	}
 
-	public void setCode(int code) {
+	public void setCode(String code) {
 		this.code = code;
 	}
 
@@ -42,6 +42,10 @@ public class Product {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	
+	public String toString() {
+		return this.name + ", " + this.code + ", " + this.price + ", " + this.description;
 	}
 
 }

@@ -4,17 +4,16 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
-public class InvoiceFrame extends Frame{
+public class InvoiceFrame extends Frame implements DataListener{
 	
 	Invoice invoiceData;
 
 	public InvoiceFrame() {
-		Color defaultBorderColor = new Color(200, 221, 242);
 		
 		// dummy data (deletable)
 		Store store = new Store("COSTCO Wholesale", "San Jose", "CA", "(409) 123-9876", 5.0);
 
-		invoiceData = new Invoice();
+		invoiceData = new Invoice(store.getTax());
 		int colWidth = 20;
 		// end of dummy data
 
@@ -38,9 +37,6 @@ public class InvoiceFrame extends Frame{
 		c.gridx = 0;
 		c.gridy = 0;
 		add(invoiceDataPanel, c);
-		
-		// dummy data (deletable)
-		invoiceTextArea.setText(invoiceData.toTable(colWidth));
 		
 		// Invoice Control Panel
 		JPanel invoiceControlPanel = new JPanel();
@@ -153,6 +149,12 @@ public class InvoiceFrame extends Frame{
 	    setLocation(x, y);
 	    
 		setVisible(true);
+	}
+
+	@Override
+	public void dataChanged() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }
