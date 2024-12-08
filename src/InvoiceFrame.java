@@ -6,17 +6,13 @@ import java.util.ArrayList;
 import java.text.DecimalFormat;
 
 
-public class InvoiceFrame extends Frame implements DataListener{
+public class InvoiceFrame extends Frame{
 	
 	Invoice invoiceData;
-	private final DecimalFormat df = new DecimalFormat("$0.00");
+	private final DecimalFormat df = new DecimalFormat("$ 0.00");
 
 	public InvoiceFrame(Invoice invoiceData) {
 		this.invoiceData = invoiceData;
-		invoiceData.addListener(this);
-		
-		int colWidth = 20;
-		// end of dummy data
 
 		setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
@@ -26,15 +22,16 @@ public class InvoiceFrame extends Frame implements DataListener{
 		
 		
 		// Invoice Text Area
-		InvoiceTextAreaListener invoiceTextArea = new InvoiceTextAreaListener(10, 20, invoiceData);
+		InvoiceTextAreaListener invoiceTextArea = new InvoiceTextAreaListener(12, Constants.WIDTH + 5, invoiceData);
 		invoiceTextArea.setFont(new Font("Courier New", Font.PLAIN, 12));
 		invoiceTextArea.setEditable(false);
-		invoiceTextArea.setText(invoiceData.toTable(colWidth));
+		invoiceTextArea.setText(invoiceData.toTable());
+		JScrollPane scrollPane = new JScrollPane(invoiceTextArea);
 		
 		JPanel invoiceDataPanel = new JPanel();
 		invoiceDataPanel.setLayout(new GridBagLayout());
 		invoiceDataPanel.setBorder(BorderFactory.createTitledBorder("Invoice Information"));
-		invoiceDataPanel.add(invoiceTextArea);
+		invoiceDataPanel.add(scrollPane);
 		
 		c.gridx = 0;
 		c.gridy = 0;
@@ -71,8 +68,10 @@ public class InvoiceFrame extends Frame implements DataListener{
 		
 		rawTotalPriceTextField.setText("$ 0.00");
 		taxedTotalPriceTextField.setText("$ 0.00");
-		discountedPriceTextField.setText("$ 0.00");
+		discountedPriceTextField.setText("not applied");
 		grandTotalPriceTextField.setText("$ 0.00");
+		
+		discountedPriceLabel.setForeground(Color.GRAY);
 		
 		salesTaxTextField.setText(invoiceData.getStore().getTax() + "%, " + invoiceData.getStore().getLocation());
 		discountTextField.setText(invoiceData.getDiscount() + "%");
@@ -135,12 +134,23 @@ public class InvoiceFrame extends Frame implements DataListener{
 		
 		discountCheckBox.addActionListener( e -> {
 			// updates discounted price
-			invoiceData.applyDiscount();
+			if (invoiceData.applyDiscount()) {
+				discountedPriceLabel.setForeground(Constants.GREEN);
+			} else {
+				discountedPriceLabel.setForeground(Color.GRAY);
+				discountedPriceTextField.setText("not applied");
+			}
+			
+			// change text color according if discount is applied.
+			// set text to "not applied"
+			
+			pack();
 		});
 		
 		payPrintReceiptButton.addActionListener( e -> {
 			// opens receipt window
-			new ReceiptFrame(invoiceData);
+			new ReceiptFrame(invoiceData, this);
+			
 			// clears invoice?
 		});
 		
@@ -160,11 +170,6 @@ public class InvoiceFrame extends Frame implements DataListener{
 	    
 		setVisible(true);
 	}
-
-	@Override
-	public void dataChanged() {
-		
-	}
 	
 	private class InvoiceTextAreaListener extends JTextArea implements DataListener{
 		Invoice model;
@@ -176,7 +181,7 @@ public class InvoiceFrame extends Frame implements DataListener{
 		}
 
 		public void dataChanged() {
-			this.setText(model.toTable(20));
+			this.setText(model.toTable());
 		}
 	}
 	

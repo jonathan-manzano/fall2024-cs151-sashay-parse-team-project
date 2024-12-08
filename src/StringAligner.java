@@ -1,4 +1,3 @@
-
 public interface StringAligner {
 
 	/**
@@ -17,4 +16,11 @@ public interface StringAligner {
 		
 		return centeredText;
 	}
+	
+	public static String rightAlignString(String text, int totalWidth) {
+		if (text.length() >= totalWidth) return text;
+		
+		return String.format("%-" + totalWidth + "s", text);
+	}
+	
 }

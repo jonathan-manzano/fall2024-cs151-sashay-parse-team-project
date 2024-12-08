@@ -1,10 +1,13 @@
 
 public class Product {
+	
 	String name;
 	String code;
 	double price;
 	String description;
 
+	public Product() {}
+	
 	public Product(String name, String code, double price, String description) {
 		this.name = name;
 		this.code = code;

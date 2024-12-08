@@ -3,6 +3,10 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.util.List;
+
 public class CashierUIFrame extends Frame{
 	
 	InvoiceFrame invoiceFrame;
@@ -11,9 +15,20 @@ public class CashierUIFrame extends Frame{
 	Store store;
 	Inventory inventory;
 	
+	// file path of app_info.json
+	String filepath = "C:/Users/delga/eclipse-workspace/fall2024-cs151-sashay-parse-team-project/src/resources/app_info.json";
+	
 	public CashierUIFrame() {
 		employee = new Employee();
-		store = new Store("Costco", "408-723-0964", "San Jose", "CA", 9.375, 10.0);
+		
+		try {
+            ObjectMapper mapper = new ObjectMapper();
+            AppData data = mapper.readValue(new File(filepath), AppData.class);
+            store = data.getStoreInfo();
+        } catch (Exception exception) {
+        	System.out.println(exception.getMessage());
+        }
+		
 		invoice = new Invoice(store, employee);
 		
 		Color defaultBorderColor = new Color(200, 221, 242);
@@ -34,6 +49,8 @@ public class CashierUIFrame extends Frame{
 		JTextField firstNameTextField = new JTextField(20);		
 		JTextField lastNameTextField = new JTextField(20);
 		JButton startShiftButton = new JButton("Start Shift");
+		
+		startShiftButton.setForeground(Constants.GREEN);
 		
 		c.gridx = 0;
 		c.gridy = 0;
@@ -72,9 +89,9 @@ public class CashierUIFrame extends Frame{
 		JTextField dateTimeTextField = new JTextField(20);
 		JButton endShiftButton = new JButton("End Shift");
 		
-		// placeholders (deletable)
-		employeeTextField.setEditable(false);
+		endShiftButton.setForeground(Constants.RED);
 		
+		employeeTextField.setEditable(false);
 		dateTimeTextField.setEditable(false);
 		
 		c.gridx = 0;
@@ -111,6 +128,9 @@ public class CashierUIFrame extends Frame{
 		JButton loadInventoryButton = new JButton("Load Inventory");
 		JButton showInventoryButton = new JButton("Show Inventory");
 		
+		loadInventoryButton.setForeground(Constants.BLUE);
+		showInventoryButton.setForeground(Constants.BLUE);
+		
 		c.gridx = 0;
 		c.gridy = 0;
 		c.gridwidth = 1;
@@ -131,6 +151,8 @@ public class CashierUIFrame extends Frame{
 		JLabel quantityLabel = new JLabel("Quantity: ");
 		JTextField productCodeTextField = new JTextField(20);		
 		JTextField quantityTextField = new JTextField(20);
+		
+		addItemButton.setForeground(Constants.GREEN);
 		
 		c.gridx = 0;
 		c.gridy = 0;
@@ -160,6 +182,8 @@ public class CashierUIFrame extends Frame{
 		JLabel itemNumberLabel = new JLabel("Item Number: ");
 		JTextField itemNumberTextField = new JTextField(20);
 		JButton removeItemButton = new JButton("Remove");
+		
+		removeItemButton.setForeground(Constants.RED);
 		
 		c.gridx = 0;
 		c.gridy = 0;
@@ -215,39 +239,58 @@ public class CashierUIFrame extends Frame{
 		inventoryPanel.setVisible(false);
 		controlPanel.setVisible(false);
 		
-		// TO BE DONE
+		JDialog errorDialog = new JDialog(this);
+		errorDialog.setTitle("Error");
+        errorDialog.setSize(275, 100);
+        errorDialog.setModal(true);
+        JLabel errorMessage = new JLabel("");
+        errorMessage.setHorizontalAlignment(JLabel.CENTER);
+        errorMessage.setForeground(Constants.RED);
+        errorDialog.add(errorMessage);
+        errorDialog.setLocationRelativeTo(this);
 		
 		startShiftButton.addActionListener( e -> {
-			// disables login panel
-			// initializes store?
-			
 			// initializes employee
 			employee.setFirstName(firstNameTextField.getText());
 			employee.setLastName(lastNameTextField.getText());
-			employeeTextField.setText(employee.getName());
-			dateTimeTextField.setText(DateDecorator.readableFormat(java.time.LocalDateTime.now().toString()));
 			
-			// opens invoice frame
-			invoiceFrame = new InvoiceFrame(invoice);
-			
-			loginPanel.setVisible(false);
-			shiftInfoPanel.setVisible(true);
-			inventoryPanel.setVisible(true);
-			controlPanel.setVisible(true);
-			
-			pack();
+			if (employee.getFirstName().length() != 0 || employee.getLastName().length() != 0) {
+				employeeTextField.setText(employee.getName());
+				dateTimeTextField.setText(DateDecorator.readableFormat(java.time.LocalDateTime.now().toString()));
+				
+				// opens invoice frame
+				if (invoiceFrame == null ) {
+					invoiceFrame = new InvoiceFrame(invoice);
+				}
+				
+				
+				setVisible(false);
+				
+				loginPanel.setVisible(false);
+				shiftInfoPanel.setVisible(true);
+				inventoryPanel.setVisible(true);
+				controlPanel.setVisible(true);
+				
+				pack();
+				setLocationRelativeTo(null);
+				setVisible(true);
+			} else {
+				errorMessage.setText("Name must not be empty.");
+				errorDialog.setLocationRelativeTo(this);
+				errorDialog.setVisible(true);
+			}
 		});
 		
 		endShiftButton.addActionListener( e -> {
 			// clears UI
 			// enables login panel
-			
 			invoiceFrame.dispose();
+			invoiceFrame = null;
+			invoice.clear();
 			
-	        productCodeTextField.setText("");;
-	        quantityTextField.setText("");;
-	        itemNumberTextField.setText("");;
-			
+	        productCodeTextField.setText("");
+	        quantityTextField.setText("");
+	        itemNumberTextField.setText("");
 			
 			loginPanel.setVisible(true);
 			shiftInfoPanel.setVisible(false);
@@ -261,19 +304,20 @@ public class CashierUIFrame extends Frame{
 			loadInventoryButton.setEnabled(false);
 			
 			inventory = new Inventory();
-			
-			inventory.add(new Product("NY Cheesecake", "01145", 19.99, "Whole 14 Inch"));
-	        inventory.add(new Product("Cookies", "01151", 10.25, "Chocolate Chip"));
-	        inventory.add(new Product("Apples", "01102", 5.55, "1 lb Fuji"));
-	        inventory.add(new Product("Clementines", "01136", 6.25, "3 lb Cuties"));
-	        inventory.add(new Product("Salad", "01294", 8.40, "Mediterranean Mix"));
-	        inventory.add(new Product("Chips", "01210", 4.99, "Lightly Salted"));
-	        inventory.add(new Product("Cereal", "01257", 5.39, "Cheerios"));
-	        inventory.add(new Product("Chocolate", "01211", 8.27, "Dove 60% Dark"));
-	        inventory.add(new Product("Laptop", "01389", 429.99, "Dell Inspiron"));
-	        inventory.add(new Product("TV", "01311", 1151.99, "LG 40 Inch OLED"));
-	        inventory.add(new Product("Shoes", "01429", 29.99, "Croc Flip Flops"));
-	        inventory.add(new Product("Shirt", "01484", 14.99, "Puma Golf Polo"));
+	        
+	        try {
+	            ObjectMapper mapper = new ObjectMapper();
+	            AppData data = mapper.readValue(new File(filepath), AppData.class);
+	            List<Product> products = data.getProductInfo();
+	            
+	            for (Product product : products) {
+	                inventory.add(product);
+	            }
+	        } 
+	        catch (Exception exception) 
+	        {
+	        	System.out.println(exception.getMessage());
+	        }
 	        
 	        showInventoryButton.setEnabled(true);
 	        addItemButton.setEnabled(true);
@@ -285,18 +329,60 @@ public class CashierUIFrame extends Frame{
 		
 		showInventoryButton.addActionListener( e -> {
 			// opens inventory frame
-			new InventoryFrame(inventory.getProducts(), productCodeTextField.getText()); // constructor should accept data (Products Array)
+			new InventoryFrame(inventory.getProducts(), productCodeTextField.getText(), this); // constructor should accept data (Products Array)
 		});
 		
 		addItemButton.addActionListener( e -> {
 			Product p = inventory.find(productCodeTextField.getText()); // product
-			int q = Integer.valueOf(quantityTextField.getText()); // quantity
+			int q = 0;
 			
-			if (p != null) invoice.addItem(p, q);
+			try {
+				q = Integer.valueOf(quantityTextField.getText()); // quantity
+			} catch (Exception exception) {
+				errorMessage.setText("Invalid quantity value.");
+				errorDialog.setLocationRelativeTo(this);
+				errorDialog.setVisible(true);
+				return;
+			}
+			
+			
+			if (q < 1) {
+				errorMessage.setText("Quantity must be greater than zero.");
+				errorDialog.setLocationRelativeTo(this);
+				errorDialog.setVisible(true);
+				return;
+			}
+			
+			if (p != null) {
+				invoice.addItem(p, q);
+			} else {
+				errorMessage.setText("The product code entered does not exist.");
+				errorDialog.setLocationRelativeTo(this);
+				errorDialog.setVisible(true);
+			}
 		});
 		
 		removeItemButton.addActionListener( e -> {
-			invoice.removeItem(Integer.valueOf(itemNumberTextField.getText()));
+			int index;
+			
+			try {
+				index = Integer.valueOf(itemNumberTextField.getText());
+			} catch (Exception exception) {
+				errorMessage.setText("Invalid quantity value.");
+				errorDialog.setLocationRelativeTo(this);
+				errorDialog.setVisible(true);
+				return;
+			}
+			
+			if (index <= invoice.getSize() && index >= 0) {
+				invoice.removeItem(index);
+			} else {
+				errorMessage.setText("The item number entered is invalid.");
+				errorDialog.setLocationRelativeTo(this);
+				errorDialog.setVisible(true);
+			}
+			
+			
 		});
 		
 		this.addWindowListener(new WindowAdapter() {

@@ -1,0 +1,85 @@
+{
+  "store_info": {
+    "name": "Costco",
+    "phone": "408-723-0964",
+    "city": "San Jose",
+    "state": "CA",
+    "tax": 9.375,
+    "discount": 10
+  },
+  "product_info": [
+    {
+      "code": "01145",
+      "name": "NY Cheesecake",
+      "price": 19.99,
+      "description": "Whole 14 Inch"
+    },
+    {
+      "code": "01151",
+      "name": "Cookies",
+      "price": 10.25,
+      "description": "Chocolate Chip"
+    },
+    {
+      "code": "01102",
+      "name": "Apples",
+      "price": 5.55,
+      "description": "1 lb Fuji"
+    },
+    {
+      "code": "01136",
+      "name": "Clementines",
+      "price": 6.25,
+      "description": "3 lb Cuties"
+    },
+    {
+      "code": "01294",
+      "name": "Salad",
+      "price": 8.40,
+      "description": "Mediterranean Mix"
+    },
+    {
+      "code": "01210",
+      "name": "Chips",
+      "price": 4.99,
+      "description": "Lightly Salted"
+    },
+    {
+      "code": "01257",
+      "name": "Cereal",
+      "price": 5.39,
+      "description": "Cheerios"
+    },
+    {
+      "code": "01211",
+      "name": "Chocolate",
+      "price": 8.27,
+      "description": "Dove 60% Dark"
+    },
+    {
+      "code": "01389",
+      "name": "Laptop",
+      "price": 429.99,
+      "description": "Dell Inspiron"
+    },
+    {
+      "code": "01311",
+      "name": "TV",
+      "price": 1151.99,
+      "description": "LG 40 Inch OLED"
+    },
+    {
+      "code": "01429",
+      "name": "Shoes",
+      "price": 29.99,
+      "description": "Croc Flip Flops"
+    },
+    {
+      "code": "01484",
+      "name": "Shirt",
+      "price": 14.99,
+      "description": "Puma Golf Polo"
+    }
+  ]
+}
+  

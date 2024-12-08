@@ -7,7 +7,7 @@ public class Store {
 	Double tax;
 	Double discount;
 	
-	public Store(){}
+	public Store() {}
 	
 	public Store(String name, String phone, String city, String state, Double tax, Double discount) {
 		this.name = name;

@@ -8,7 +8,7 @@ public class InventoryFrame extends Frame{
 
 	ArrayList<Product> products;
 
-	public InventoryFrame(ArrayList<Product> productList, String filter) {
+	public InventoryFrame(ArrayList<Product> productList, String filter, Component owner) {
 		this.products = productList;
 
 		setLayout(new GridBagLayout());
@@ -21,7 +21,7 @@ public class InventoryFrame extends Frame{
 
 		JTextArea receiptTextArea = new JTextArea(19, 80); // actual formula, 19 + no. of items.
 		receiptTextArea.setFont(new Font("Courier New", Font.PLAIN, 12));
-		receiptTextArea.setText(this.toTable(20, filter));
+		receiptTextArea.setText(this.toTable(filter));
 		receiptTextArea.setEditable(false);
 
 		JPanel receiptPanel = new JPanel();
@@ -39,20 +39,19 @@ public class InventoryFrame extends Frame{
 
 		setTitle("Inventory Window");
 		pack();
+		setLocationRelativeTo(owner);
 		setVisible(true);
 	}
 
-	public String toTable(int colWidth, String filter) {
+	public String toTable(String filter) {
 		String prefix = (filter.length() > 1 && filter.endsWith("*")) ? filter.substring(0, filter.length()-1) : "";
-		
-		System.out.println("prefix: " + prefix);
 		
 		String[] colNames = {"Name", "Code", "Price", "Description"};
 
 		String inventoryTable = "";
 
 		for (int i=0; i<colNames.length; i++) {
-			inventoryTable += StringAligner.centerAlignString(colNames[i], colWidth);
+			inventoryTable += StringAligner.centerAlignString(colNames[i], Constants.COLWIDTH);
 		}
 
 		int count = 0;
@@ -61,16 +60,16 @@ public class InventoryFrame extends Frame{
 			Product p = products.get(i);
 
 			if (p.getCode().startsWith(prefix)) {
-				inventoryTable += StringAligner.centerAlignString(p.getName(), colWidth);
-				inventoryTable += StringAligner.centerAlignString(p.getCode(), colWidth);
-				inventoryTable += StringAligner.centerAlignString("$ " + p.getPrice(), colWidth);
-				inventoryTable += StringAligner.centerAlignString(p.getDescription(), colWidth);
+				inventoryTable += StringAligner.centerAlignString(p.getName(), Constants.COLWIDTH);
+				inventoryTable += StringAligner.centerAlignString(p.getCode(), Constants.COLWIDTH);
+				inventoryTable += StringAligner.centerAlignString("$ " + p.getPrice(), Constants.COLWIDTH);
+				inventoryTable += StringAligner.centerAlignString(p.getDescription(), Constants.COLWIDTH);
 				inventoryTable += "\n";
 				count++;
 			}
 		}
 		
-		if (count == 0) inventoryTable += StringAligner.centerAlignString("No product code matched", colWidth * 4);
+		if (count == 0) inventoryTable += StringAligner.centerAlignString("No product code matched", Constants.COLWIDTH * 4);
 
 		return inventoryTable;
 	}
