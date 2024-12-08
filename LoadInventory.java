@@ -20,7 +20,7 @@ public class LoadInventory {
             System.out.println("\nProducts: ");
             for (Product product : products) 
             {
-                System.out.println(product.getProductName() + " costs $" + product.getPrice());
+                System.out.println(product.getProductName() + " costs $" + product.getPrice() + " - " + product.getDescription());
             }
         } 
         catch (Exception e) 

@@ -1,5 +1,5 @@
 {
-  "storeInfo": {
+  "store_info": {
     "storeName": "Costco",
     "phone": "408-723-0964",
     "city": "San Jose",
@@ -7,7 +7,7 @@
     "taxRate": 9.375,
     "discount": 10
   },
-  "productInfo": [
+  "product_info": [
     {
       "code": "01145",
       "product_name": "NY Cheesecake",

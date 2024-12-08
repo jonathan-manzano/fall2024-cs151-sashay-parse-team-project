@@ -2,16 +2,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 public class InventoryData {
-    private Store storeInfo;
-    private List<Product> productInfo;
+    @JsonProperty("store_info")
+    private Store store_info;
+
+    @JsonProperty("product_info")
+    private List<Product> product_info;
 
     public Store getStoreInfo() 
     {
-        return storeInfo;
+        return store_info;
     }
 
     public List<Product> getProductInfo() 
     {
-        return productInfo;
+        return product_info;
     }
 }
