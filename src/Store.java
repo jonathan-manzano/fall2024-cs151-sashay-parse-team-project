@@ -5,35 +5,17 @@ public class Store {
 	String state;
 	String phone;
 	Double tax;
+	Double discount;
 	
 	public Store(){}
 	
-	public Store(String name, String city, String state, String phone, Double tax) {
+	public Store(String name, String phone, String city, String state, Double tax, Double discount) {
 		this.name = name;
 		this.city = city;
 		this.state = state;
 		this.phone = phone;
 		this.tax = tax;
-	}
-	
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public void setCity(String city) {
-		this.city = city;
-	}
-	
-	public void setState(String state) {
-		this.state = state;
-	}
-	
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-	
-	public void setTax(Double tax) {
-		this.tax = tax;
+		this.discount = discount;
 	}
 	
 	public String getName() {
@@ -60,5 +42,7 @@ public class Store {
 		return tax;
 	}
 	
-	
+	public Double getDiscount() {
+		return discount;
+	}
 }

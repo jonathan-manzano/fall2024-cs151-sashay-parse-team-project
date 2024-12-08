@@ -3,17 +3,18 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
+import java.text.DecimalFormat;
+
 
 public class InvoiceFrame extends Frame implements DataListener{
 	
 	Invoice invoiceData;
+	private final DecimalFormat df = new DecimalFormat("$0.00");
 
-	public InvoiceFrame() {
+	public InvoiceFrame(Invoice invoiceData) {
+		this.invoiceData = invoiceData;
+		invoiceData.addListener(this);
 		
-		// dummy data (deletable)
-		Store store = new Store("COSTCO Wholesale", "San Jose", "CA", "(409) 123-9876", 5.0);
-
-		invoiceData = new Invoice(store.getTax());
 		int colWidth = 20;
 		// end of dummy data
 
@@ -25,9 +26,10 @@ public class InvoiceFrame extends Frame implements DataListener{
 		
 		
 		// Invoice Text Area
-		JTextArea invoiceTextArea = new JTextArea(10, 20);
+		InvoiceTextAreaListener invoiceTextArea = new InvoiceTextAreaListener(10, 20, invoiceData);
 		invoiceTextArea.setFont(new Font("Courier New", Font.PLAIN, 12));
 		invoiceTextArea.setEditable(false);
+		invoiceTextArea.setText(invoiceData.toTable(colWidth));
 		
 		JPanel invoiceDataPanel = new JPanel();
 		invoiceDataPanel.setLayout(new GridBagLayout());
@@ -47,27 +49,33 @@ public class InvoiceFrame extends Frame implements DataListener{
 		JLabel salesTaxLabel = new JLabel("Sales Tax: ");
 		JLabel discountLabel = new JLabel("Discount: ");
 		JLabel discountCheckBoxLabel = new JLabel("Apply Discount: ");
+		JLabel rawTotalPriceLabel = new JLabel("Raw Total: ");
 		JLabel discountedPriceLabel = new JLabel("Discounted: ");
-		JLabel totalPriceLabel = new JLabel("Total: ");
+		JLabel taxedTotalPriceLabel = new JLabel("Taxed Total: ");
 		JLabel grandTotalPriceLabel = new JLabel("Grand Price: ");
 		JTextField salesTaxTextField = new JTextField(20);
 		JTextField discountTextField = new JTextField(20);
 		JCheckBox discountCheckBox = new JCheckBox();
-		JTextField discountedPriceTextField = new JTextField(20);
-		JTextField totalPriceTextField = new JTextField(20);
-		JTextField grandTotalPriceTextField = new JTextField(20);
+		RawTotalTextField rawTotalPriceTextField = new RawTotalTextField(20, invoiceData);
+		DiscountedTextField discountedPriceTextField = new DiscountedTextField(20, invoiceData);
+		TaxedTotalTextField taxedTotalPriceTextField = new TaxedTotalTextField(20, invoiceData);
+		GrandTotalTextField grandTotalPriceTextField = new GrandTotalTextField(20, invoiceData);
 		JButton payPrintReceiptButton = new JButton("Pay and Print Receipt");
 		
 		salesTaxTextField.setEditable(false);
+		rawTotalPriceTextField.setEditable(false);
 		discountTextField.setEditable(false);
-		totalPriceTextField.setEditable(false);
+		taxedTotalPriceTextField.setEditable(false);
 		discountedPriceTextField.setEditable(false);
 		grandTotalPriceTextField.setEditable(false);
 		
-		// dummy data (deletable)
-		salesTaxTextField.setText(store.getLocation());
-		discountTextField.setText(store.getTax().toString() + "%");
-		// end of dummy data
+		rawTotalPriceTextField.setText("$ 0.00");
+		taxedTotalPriceTextField.setText("$ 0.00");
+		discountedPriceTextField.setText("$ 0.00");
+		grandTotalPriceTextField.setText("$ 0.00");
+		
+		salesTaxTextField.setText(invoiceData.getStore().getTax() + "%, " + invoiceData.getStore().getLocation());
+		discountTextField.setText(invoiceData.getDiscount() + "%");
 		
 		c.gridy = 0;
 		invoiceControlPanel.add(salesTaxLabel, c);
@@ -79,10 +87,13 @@ public class InvoiceFrame extends Frame implements DataListener{
 		invoiceControlPanel.add(discountCheckBoxLabel, c);
 
 		c.gridy++;
+		invoiceControlPanel.add(rawTotalPriceLabel, c);
+		
+		c.gridy++;
 		invoiceControlPanel.add(discountedPriceLabel, c);		
 
 		c.gridy++;
-		invoiceControlPanel.add(totalPriceLabel, c);
+		invoiceControlPanel.add(taxedTotalPriceLabel, c);
 		
 		c.gridy++;
 		invoiceControlPanel.add(grandTotalPriceLabel, c);
@@ -98,10 +109,13 @@ public class InvoiceFrame extends Frame implements DataListener{
 		invoiceControlPanel.add(discountCheckBox, c); 
 
 		c.gridy++;
+		invoiceControlPanel.add(rawTotalPriceTextField, c);
+		
+		c.gridy++;
 		invoiceControlPanel.add(discountedPriceTextField, c);
 		
 		c.gridy++;
-		invoiceControlPanel.add(totalPriceTextField, c);
+		invoiceControlPanel.add(taxedTotalPriceTextField, c);
 
 		c.gridy++;
 		invoiceControlPanel.add(grandTotalPriceTextField, c);
@@ -119,20 +133,16 @@ public class InvoiceFrame extends Frame implements DataListener{
 		add(invoiceControlPanel, c);
 		
 		
-		// TO BE DONE
-		
 		discountCheckBox.addActionListener( e -> {
 			// updates discounted price
+			invoiceData.applyDiscount();
 		});
 		
 		payPrintReceiptButton.addActionListener( e -> {
 			// opens receipt window
-			new ReceiptFrame(); // constructor should accept data (Product & Quantity Array)
+			new ReceiptFrame(invoiceData);
 			// clears invoice?
-			
 		});
-		
-		
 		
 		this.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent windowEvent){
@@ -153,8 +163,76 @@ public class InvoiceFrame extends Frame implements DataListener{
 
 	@Override
 	public void dataChanged() {
-		// TODO Auto-generated method stub
 		
 	}
 	
+	private class InvoiceTextAreaListener extends JTextArea implements DataListener{
+		Invoice model;
+		
+		private InvoiceTextAreaListener (int rows, int cols, Invoice model) {
+			super(rows, cols);
+			this.model = model;
+			model.addListener(this);
+		}
+
+		public void dataChanged() {
+			this.setText(model.toTable(20));
+		}
+	}
+	
+	private abstract class TextFieldListener extends JTextField implements DataListener{
+		Invoice model;
+		
+		public TextFieldListener (int cols, Invoice model) {
+			super(cols);
+			this.model = model;
+			model.addListener(this);
+		}
+
+		public abstract void dataChanged();
+	}
+	
+	private class RawTotalTextField extends TextFieldListener {
+		
+		public RawTotalTextField (int cols, Invoice model) {
+			super(cols, model);
+		}
+		 
+		public void dataChanged(){
+			this.setText(df.format(model.rawTotal()));
+		};
+	}
+	
+	private class DiscountedTextField extends TextFieldListener {
+		
+		public DiscountedTextField (int cols, Invoice model) {
+			super(cols, model);
+		}
+		 
+		public void dataChanged(){
+			this.setText(df.format(model.discountedTotal()));
+		};
+	}
+	
+	private class TaxedTotalTextField extends TextFieldListener {
+		
+		public TaxedTotalTextField (int cols, Invoice model) {
+			super(cols, model);
+		}
+		 
+		public void dataChanged(){
+			this.setText(df.format(model.taxedTotal()));
+		};
+	}
+	
+	private class GrandTotalTextField extends TextFieldListener {
+		
+		public GrandTotalTextField (int cols, Invoice model) {
+			super(cols, model);
+		}
+		 
+		public void dataChanged(){
+			this.setText(df.format(model.grandTotal()));
+		};
+	}
 }

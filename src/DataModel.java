@@ -13,7 +13,10 @@ public class DataModel<T> {
 	 * Constructs the DataModel using data from an array
 	 * @param initialData the array of data to be used
 	 */
-	public DataModel() {}
+	public DataModel() {
+		data = new ArrayList<T>();
+		listeners = new ArrayList<DataListener>();
+	}
 	
 	/**
 	 * Stores the data listener

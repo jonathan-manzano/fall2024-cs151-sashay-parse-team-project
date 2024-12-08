@@ -6,13 +6,15 @@ import java.awt.event.WindowEvent;
 public class CashierUIFrame extends Frame{
 	
 	InvoiceFrame invoiceFrame;
+	Invoice invoice;
 	Employee employee;
 	Store store;
 	Inventory inventory;
 	
 	public CashierUIFrame() {
 		employee = new Employee();
-		store = new Store();
+		store = new Store("Costco", "408-723-0964", "San Jose", "CA", 9.375, 10.0);
+		invoice = new Invoice(store, employee);
 		
 		Color defaultBorderColor = new Color(200, 221, 242);
 		
@@ -109,8 +111,6 @@ public class CashierUIFrame extends Frame{
 		JButton loadInventoryButton = new JButton("Load Inventory");
 		JButton showInventoryButton = new JButton("Show Inventory");
 		
-		showInventoryButton.setEnabled(false);
-		
 		c.gridx = 0;
 		c.gridy = 0;
 		c.gridwidth = 1;
@@ -127,18 +127,18 @@ public class CashierUIFrame extends Frame{
 		addItemPanel.setBorder(BorderFactory.createTitledBorder("Add Item"));
 		
 		JButton addItemButton = new JButton("Add Item");
-		JLabel productNumberLabel = new JLabel("Product Number: ");
+		JLabel productCodeLabel = new JLabel("Product Code: ");
 		JLabel quantityLabel = new JLabel("Quantity: ");
-		JTextField productNumberTextField = new JTextField(20);		
+		JTextField productCodeTextField = new JTextField(20);		
 		JTextField quantityTextField = new JTextField(20);
 		
 		c.gridx = 0;
 		c.gridy = 0;
-		addItemPanel.add(productNumberLabel, c);
+		addItemPanel.add(productCodeLabel, c);
 		
 		c.gridx = 1;
 		c.gridy = 0;
-		addItemPanel.add(productNumberTextField, c);
+		addItemPanel.add(productCodeTextField, c);
 
 		c.gridx = 0;
 		c.gridy = 1;
@@ -204,6 +204,13 @@ public class CashierUIFrame extends Frame{
 		c.gridy = 3;
 		add(controlPanel, c);
 		
+		showInventoryButton.setEnabled(false);
+        addItemButton.setEnabled(false);
+        productCodeTextField.setEditable(false);
+        quantityTextField.setEditable(false);
+        removeItemButton.setEnabled(false);
+        itemNumberTextField.setEditable(false);
+		
 		shiftInfoPanel.setVisible(false);
 		inventoryPanel.setVisible(false);
 		controlPanel.setVisible(false);
@@ -221,7 +228,7 @@ public class CashierUIFrame extends Frame{
 			dateTimeTextField.setText(DateDecorator.readableFormat(java.time.LocalDateTime.now().toString()));
 			
 			// opens invoice frame
-			invoiceFrame = new InvoiceFrame();
+			invoiceFrame = new InvoiceFrame(invoice);
 			
 			loginPanel.setVisible(false);
 			shiftInfoPanel.setVisible(true);
@@ -236,6 +243,11 @@ public class CashierUIFrame extends Frame{
 			// enables login panel
 			
 			invoiceFrame.dispose();
+			
+	        productCodeTextField.setText("");;
+	        quantityTextField.setText("");;
+	        itemNumberTextField.setText("");;
+			
 			
 			loginPanel.setVisible(true);
 			shiftInfoPanel.setVisible(false);
@@ -264,24 +276,28 @@ public class CashierUIFrame extends Frame{
 	        inventory.add(new Product("Shirt", "01484", 14.99, "Puma Golf Polo"));
 	        
 	        showInventoryButton.setEnabled(true);
+	        addItemButton.setEnabled(true);
+	        productCodeTextField.setEditable(true);
+	        quantityTextField.setEditable(true);
+	        removeItemButton.setEnabled(true);
+	        itemNumberTextField.setEditable(true);
 		});
 		
 		showInventoryButton.addActionListener( e -> {
-			// requires inventory to be loaded
 			// opens inventory frame
-			new InventoryFrame(inventory.getProducts(), productNumberTextField.getText()); // constructor should accept data (Products Array)
+			new InventoryFrame(inventory.getProducts(), productCodeTextField.getText()); // constructor should accept data (Products Array)
 		});
 		
 		addItemButton.addActionListener( e -> {
-			// add item to invoice
+			Product p = inventory.find(productCodeTextField.getText()); // product
+			int q = Integer.valueOf(quantityTextField.getText()); // quantity
+			
+			if (p != null) invoice.addItem(p, q);
 		});
 		
 		removeItemButton.addActionListener( e -> {
-			// remove item from invoice
+			invoice.removeItem(Integer.valueOf(itemNumberTextField.getText()));
 		});
-		
-		
-		
 		
 		this.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent windowEvent){

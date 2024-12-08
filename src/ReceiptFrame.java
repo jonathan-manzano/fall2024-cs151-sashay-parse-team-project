@@ -5,18 +5,8 @@ import java.awt.event.WindowEvent;
 
 
 public class ReceiptFrame extends Frame{
-	Store store;
-	Employee employee;
 	
-	
-	
-	public ReceiptFrame() {
-		Color defaultBorderColor = new Color(200, 221, 242);
-		
-		// dummy data
-		Store store = new Store("COSTCO Wholesale", "San Jose", "CA", "(409) 123-9876", 5.0);
-		Employee employee = new Employee("Clyde Joshua", "Delgado");
-		
+	public ReceiptFrame(Invoice invoice) {		
 		setLayout(new GridBagLayout());
 		
 		GridBagConstraints c = new GridBagConstraints();

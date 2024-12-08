@@ -1,15 +1,31 @@
 import java.util.*;
 
 public class Invoice extends DataModel<InvoiceItem>{
-	double discount;
-	double tax;
+	Store store;
+	Employee employee;
+	boolean discount;
 	double rawTotal;
 	double discountedTotal;
 	double taxedTotal;
 	double grandTotal;
 	
-	public Invoice(double tax) {
-		this.tax = tax;
+	public Invoice(Store store, Employee employee) {
+		this.store = store;
+		this.employee = employee;	
+	}
+	
+	public Store getStore() {
+		return store;
+	}
+	
+	public double getDiscount() {
+		return store.getDiscount();
+	}
+	
+	public void applyDiscount() {
+		discount = !(discount);
+		calculateTotals();
+		notifyListeners();
 	}
 	
 	public void addItem(Product p, int q) {
@@ -17,23 +33,25 @@ public class Invoice extends DataModel<InvoiceItem>{
 		this.data.add(newItem);
 		rawTotal += newItem.getRawTotal();
 		calculateTotals();
+		notifyListeners();
 	}
 	
 	public void removeItem(int i) {
-		InvoiceItem removedItem = data.get(i);
-		this.data.remove(i);
+		if (i < 1) return;
+		
+		InvoiceItem removedItem = data.get(i - 1);
+		this.data.remove(i - 1);
 		rawTotal -= removedItem.getRawTotal();
 		calculateTotals();
+		notifyListeners();
 	}
 	
-	// TO BE DONE
-	
 	private void calculateTotals() {
-		double discountMultiplier = ((100.0 - discount) / 100.0);
-		double taxMultiplier = ((100.0 + tax) / 100.0);
+		double discountMultiplier = ((100.0 - store.getDiscount()) / 100.0);
+		double taxMultiplier = ((100.0 + store.getTax()) / 100.0);
 		
 		this.discountedTotal = rawTotal * discountMultiplier;
-		this.taxedTotal = (discount > 0) ? discountedTotal * taxMultiplier : rawTotal * taxMultiplier;
+		this.taxedTotal = (discount) ? discountedTotal * taxMultiplier : rawTotal * taxMultiplier;
 		this.grandTotal = taxedTotal;
 	}
 	
@@ -67,7 +85,7 @@ public class Invoice extends DataModel<InvoiceItem>{
 			InvoiceItem item = data.get(i);
 			double rawTotal = item.getRawTotal(); // double * int at the moment
 			
-			invoiceTable += StringAligner.centerAlignString(String.valueOf(i), colWidth);
+			invoiceTable += StringAligner.centerAlignString(String.valueOf(i + 1), colWidth);
 			invoiceTable += StringAligner.centerAlignString(item.getName(), colWidth);
 			invoiceTable += StringAligner.centerAlignString(String.valueOf(item.getQuantity()), colWidth);
 			invoiceTable += StringAligner.centerAlignString( "$" + rawTotal, colWidth);
@@ -75,6 +93,10 @@ public class Invoice extends DataModel<InvoiceItem>{
 		}
 		
 		return invoiceTable;
+	}
+	
+	public void clear() {
+		
 	}
 }
 

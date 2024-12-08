@@ -14,4 +14,12 @@ public class Inventory {
 	public ArrayList<Product> getProducts(){
 		return (ArrayList<Product>) products.clone();
 	}
+	
+	public Product find(String code) {
+		for (Product p: products) {
+			if (p.getCode().equals(code)) return p;
+		}
+		
+		return null;
+	}
 }
