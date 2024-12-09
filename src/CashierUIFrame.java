@@ -12,6 +12,7 @@ import java.util.List;
 public class CashierUIFrame extends Frame{
 	
 	InvoiceFrame invoiceFrame;
+	InventoryFrame inventoryFrame;
 	Invoice invoice;
 	Employee employee;
 	Store store;
@@ -236,14 +237,9 @@ public class CashierUIFrame extends Frame{
 		c.gridy = 3;
 		add(controlPanel, c);
 		
-		showInventoryButton.setEnabled(false);
-        addItemButton.setEnabled(false);
-        productCodeTextField.setEditable(false);
-        quantityTextField.setEditable(false);
-        removeItemButton.setEnabled(false);
-        itemNumberTextField.setEditable(false);
-        endShiftButton.setEnabled(false);
-        loadInventoryButton.setEnabled(false);
+		toggleComponents(shiftInfoPanel, false);
+		toggleComponents(inventoryPanel, false);
+		toggleComponents(controlPanel, false);
 		
 		JDialog errorDialog = new JDialog(this);
 		errorDialog.setTitle("Error");
@@ -271,26 +267,18 @@ public class CashierUIFrame extends Frame{
 				
 				// opens invoice frame
 				if (invoiceFrame == null ) {
-					invoiceFrame = new InvoiceFrame(invoice);
+					invoiceFrame = new InvoiceFrame(invoice, this);
 				}
 				
-				firstNameTextField.setEditable(false);
-				lastNameTextField.setEditable(false);
-				startShiftButton.setEnabled(false);
-				
-				endShiftButton.setEnabled(true);
+				toggleComponents(loginPanel, false);
+				toggleComponents(shiftInfoPanel, true);
 				toggleComponents(invoiceFrame, true);
 				
 				if (inventory == null) {
 					loadInventoryButton.setEnabled(true);
 				} else {
 					showInventoryButton.setEnabled(true);
-			        addItemButton.setEnabled(true);
-			        removeItemButton.setEnabled(true);
-			        
-			        productCodeTextField.setEditable(true);
-			        quantityTextField.setEditable(true);
-			        itemNumberTextField.setEditable(true);
+					toggleComponents(controlPanel, true);
 				}
 				
 			} else {
@@ -313,19 +301,10 @@ public class CashierUIFrame extends Frame{
 	        quantityTextField.setText("");
 	        itemNumberTextField.setText("");
 	        
-	        endShiftButton.setEnabled(false);
-	        showInventoryButton.setEnabled(false);
-	        addItemButton.setEnabled(false);
-	        removeItemButton.setEnabled(false);
-	        loadInventoryButton.setEnabled(false);
-	        
-	        productCodeTextField.setEditable(false);
-	        quantityTextField.setEditable(false);
-	        itemNumberTextField.setEditable(false);
-	        
-	        firstNameTextField.setEditable(true);
-			lastNameTextField.setEditable(true);
-			startShiftButton.setEnabled(true);
+	        toggleComponents(shiftInfoPanel, false);
+	        toggleComponents(inventoryPanel, false);
+	        toggleComponents(controlPanel, false);
+	        toggleComponents(loginPanel, true);
 		});
 		
 		loadInventoryButton.addActionListener( e -> {
@@ -348,16 +327,16 @@ public class CashierUIFrame extends Frame{
 	        }
 	        
 	        showInventoryButton.setEnabled(true);
-	        addItemButton.setEnabled(true);
-	        productCodeTextField.setEditable(true);
-	        quantityTextField.setEditable(true);
-	        removeItemButton.setEnabled(true);
-	        itemNumberTextField.setEditable(true);
+	        toggleComponents(controlPanel, true);
 		});
 		
 		showInventoryButton.addActionListener( e -> {
-			// opens inventory frame
-			new InventoryFrame(inventory.getProducts(), productCodeTextField.getText(), this); // constructor should accept data (Products Array)
+			if (inventoryFrame != null) {
+				inventoryFrame.dispose();
+				inventoryFrame = null;
+			}
+			
+			inventoryFrame = new InventoryFrame(inventory.getProducts(), productCodeTextField.getText(), this); // constructor should accept data (Products Array)
 		});
 		
 		addItemButton.addActionListener( e -> {

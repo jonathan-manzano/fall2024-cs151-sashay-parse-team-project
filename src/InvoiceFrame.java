@@ -11,7 +11,7 @@ public class InvoiceFrame extends Frame{
 	Invoice invoiceData;
 	private final DecimalFormat df = new DecimalFormat("$ 0.00");
 
-	public InvoiceFrame(Invoice invoiceData) {
+	public InvoiceFrame(Invoice invoiceData, Component owner) {
 		this.invoiceData = invoiceData;
 
 		setLayout(new GridBagLayout());
@@ -176,12 +176,7 @@ public class InvoiceFrame extends Frame{
 		
 		setTitle("Invoice Window");
 		pack();
-		
-		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
-	    int x = (int) ((dimension.getWidth() - getWidth()));
-	    int y = (int) ((dimension.getHeight() - getHeight()) / 2);
-	    setLocation(x, y);
-	    
+	    setLocation(owner.getX() + owner.getWidth(), owner.getY());
 		setVisible(true);
 	}
 	

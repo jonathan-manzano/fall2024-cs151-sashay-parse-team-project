@@ -55,7 +55,7 @@ public class InventoryFrame extends Frame{
 
 		setTitle("Inventory Window");
 		pack();
-		setLocationRelativeTo(owner);
+		setLocation(owner.getX() - getWidth(), owner.getY());
 		setVisible(true);
 	}
 
