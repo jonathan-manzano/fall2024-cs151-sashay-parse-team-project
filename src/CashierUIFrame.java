@@ -254,14 +254,6 @@ public class CashierUIFrame extends Frame{
         errorMessage.setForeground(Constants.RED);
         errorDialog.add(errorMessage);
         errorDialog.setLocationRelativeTo(this);
-		
-        // deletable set data
-        firstNameTextField.setText("Clyde");
-        lastNameTextField.setText("Delgado");
-        productCodeTextField.setText("01145");
-        quantityTextField.setText("1");
-        itemNumberTextField.setText("1");
-        // end of deletable set data
         
         
 		startShiftButton.addActionListener( e -> {
