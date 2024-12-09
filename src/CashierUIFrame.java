@@ -9,6 +9,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.util.List;
 
+/**
+ * CashierUIFrame displays the controls for the application.
+ * It allows the user to login, record shifts, and interact with inventory and invoice
+ */
 public class CashierUIFrame extends Frame{
 	
 	InvoiceFrame invoiceFrame;
@@ -21,17 +25,13 @@ public class CashierUIFrame extends Frame{
 	// file path of app_info.json
 	String filepath = "C:/Users/delga/eclipse-workspace/fall2024-cs151-sashay-parse-team-project/src/resources/app_info.json";
 	
+	/**
+	 * Constructs a CashierUIFrame which initializes the necessary objects for the application
+	 */
 	public CashierUIFrame() {
+		loadJSONStore();
 		employee = new Employee();
-		
-		try {
-            ObjectMapper mapper = new ObjectMapper();
-            AppData data = mapper.readValue(new File(filepath), AppData.class);
-            store = data.getStoreInfo();
-        } catch (Exception exception) {
-        	System.out.println(exception.getMessage());
-        }
-		
+		inventory = new Inventory();
 		invoice = new Invoice(store, employee);
 		
 		Color defaultBorderColor = new Color(200, 221, 242);
@@ -253,33 +253,29 @@ public class CashierUIFrame extends Frame{
         
         
 		startShiftButton.addActionListener( e -> {
-			// initializes employee
-			employee.setFirstName(firstNameTextField.getText());
-			employee.setLastName(lastNameTextField.getText());
+			// initialize employee name
+			employee.setName(firstNameTextField.getText(), lastNameTextField.getText());
 			
+			// check if name has empty fields
 			if (employee.getFirstName().length() != 0 && employee.getLastName().length() != 0) {
 				employeeTextField.setText(employee.getName());
 				startDateTimeTextField.setText(DateDecorator.readableFormat(java.time.LocalDateTime.now().toString()));
 				endDateTimeTextField.setText("");
-				
 				firstNameTextField.setText("");
 				lastNameTextField.setText("");
 				
-				// opens invoice frame
-				if (invoiceFrame == null ) {
-					invoiceFrame = new InvoiceFrame(invoice, this);
-				}
-				
 				toggleComponents(loginPanel, false);
 				toggleComponents(shiftInfoPanel, true);
-				toggleComponents(invoiceFrame, true);
-				
-				if (inventory == null) {
+				 
+				if (!inventory.isLoaded()) {
 					loadInventoryButton.setEnabled(true);
 				} else {
 					showInventoryButton.setEnabled(true);
 					toggleComponents(controlPanel, true);
 				}
+				
+				if (invoiceFrame == null ) invoiceFrame = new InvoiceFrame(invoice, this);
+				toggleComponents(invoiceFrame, true);
 				
 			} else {
 				errorMessage.setText("Name must not be empty.");
@@ -289,14 +285,15 @@ public class CashierUIFrame extends Frame{
 		});
 		
 		endShiftButton.addActionListener( e -> {
-			// clears UI
+			
+			// record end of shift
 			endDateTimeTextField.setText(DateDecorator.readableFormat(java.time.LocalDateTime.now().toString()));
 			
-			// enables login panel
+			// clears and disables InvoiceFrame
 			invoice.clear();
 			toggleComponents(invoiceFrame, false);
-			//invoiceFrame.setEnabled(false);
 			
+			// clears data and toggle off controls
 	        productCodeTextField.setText("");
 	        quantityTextField.setText("");
 	        itemNumberTextField.setText("");
@@ -310,41 +307,29 @@ public class CashierUIFrame extends Frame{
 		loadInventoryButton.addActionListener( e -> {
 			loadInventoryButton.setEnabled(false);
 			
-			inventory = new Inventory();
-	        
-	        try {
-	            ObjectMapper mapper = new ObjectMapper();
-	            AppData data = mapper.readValue(new File(filepath), AppData.class);
-	            List<Product> products = data.getProductInfo();
-	            
-	            for (Product product : products) {
-	                inventory.add(product);
-	            }
-	            
-	            inventory.setLoaded(true);
-	        } catch (Exception exception) {
-	        	System.out.println(exception.getMessage());
-	        }
+			loadJSONProducts();
 	        
 	        showInventoryButton.setEnabled(true);
 	        toggleComponents(controlPanel, true);
 		});
 		
 		showInventoryButton.addActionListener( e -> {
+			// check if there exists an inventoryFrame, then dispose
 			if (inventoryFrame != null) {
 				inventoryFrame.dispose();
 				inventoryFrame = null;
 			}
 			
-			inventoryFrame = new InventoryFrame(inventory.getProducts(), productCodeTextField.getText(), this); // constructor should accept data (Products Array)
+			inventoryFrame = new InventoryFrame(inventory.getProducts(), productCodeTextField.getText(), this);
 		});
 		
 		addItemButton.addActionListener( e -> {
-			Product p = inventory.find(productCodeTextField.getText()); // product
-			int q = 0;
+			Product product = inventory.find(productCodeTextField.getText());
+			int quantity = 0;
 			
+			// check if quantity has valid value
 			try {
-				q = Integer.valueOf(quantityTextField.getText()); // quantity
+				quantity = Integer.valueOf(quantityTextField.getText());
 			} catch (Exception exception) {
 				errorMessage.setText("Invalid quantity value.");
 				errorDialog.setLocationRelativeTo(this);
@@ -352,16 +337,17 @@ public class CashierUIFrame extends Frame{
 				return;
 			}
 			
-			
-			if (q < 1) {
+			// check if quantity is > 1
+			if (quantity < 1) {
 				errorMessage.setText("Quantity must be greater than zero.");
 				errorDialog.setLocationRelativeTo(this);
 				errorDialog.setVisible(true);
 				return;
 			}
 			
-			if (p != null) {
-				invoice.addItem(p, q);
+			// check if code is valid
+			if (product != null) {
+				invoice.addItem(product, quantity);
 			} else {
 				errorMessage.setText("The product code entered does not exist.");
 				errorDialog.setLocationRelativeTo(this);
@@ -372,24 +358,24 @@ public class CashierUIFrame extends Frame{
 		removeItemButton.addActionListener( e -> {
 			int index;
 			
+			// check if index is a valid integer
 			try {
 				index = Integer.valueOf(itemNumberTextField.getText());
 			} catch (Exception exception) {
-				errorMessage.setText("Invalid quantity value.");
+				errorMessage.setText("Invalid item number value.");
 				errorDialog.setLocationRelativeTo(this);
 				errorDialog.setVisible(true);
 				return;
 			}
 			
-			if (index <= invoice.getSize() && index >= 0) {
+			// check if index is within range
+			if (index <= invoice.getSize() && index > 0) {
 				invoice.removeItem(index);
 			} else {
 				errorMessage.setText("The item number entered is invalid.");
 				errorDialog.setLocationRelativeTo(this);
 				errorDialog.setVisible(true);
 			}
-			
-			
 		});
 		
 		this.addWindowListener(new WindowAdapter() {
@@ -404,9 +390,19 @@ public class CashierUIFrame extends Frame{
 		setVisible(true);
 	}
 	
+	/**
+	 * Toggles (enable/disable) the components in a container
+	 * @param container the container that contains the components to be toggled
+	 * @param value the boolean value of which components are to be toggled to
+	 */
 	private static void toggleComponents(Container container, boolean value) {
         for (Component component : container.getComponents()) {
-        	if (component instanceof JCheckBox || component instanceof JButton) {
+        	if (component instanceof JCheckBox) {
+            	component.setEnabled(value);
+            	((JCheckBox) component).setSelected(false);
+        	}
+        			
+        	if (component instanceof JButton) {
         		component.setEnabled(value);
             }
         	
@@ -419,5 +415,37 @@ public class CashierUIFrame extends Frame{
             }
         }
     }
+	
+	/**
+	 * Loads the store information from a JSON file
+	 */
+	private void loadJSONStore() {
+		try {
+            ObjectMapper mapper = new ObjectMapper();
+            AppData data = mapper.readValue(new File(filepath), AppData.class);
+            store = data.getStoreInfo();
+        } catch (Exception exception) {
+        	System.out.println(exception.getMessage());
+        }
+	}
+	
+	/**
+	 * Loads the product information from a JSON file
+	 */
+	private void loadJSONProducts() {
+		try {
+            ObjectMapper mapper = new ObjectMapper();
+            AppData data = mapper.readValue(new File(filepath), AppData.class);
+            List<Product> products = data.getProductInfo();
+            
+            for (Product product : products) {
+                inventory.add(product);
+            }
+            
+            inventory.setLoaded();
+        } catch (Exception exception) {
+        	System.out.println(exception.getMessage());
+        }
+	}
 	
 }

@@ -1,6 +1,9 @@
 import java.awt.*;
-import java.text.DecimalFormat;
 
+/**
+ * A class that contains the constants used for the UI Components.
+ * Acts as global variables
+ */
 public class Constants {
 	public static Color GREEN = new Color(0, 102, 0);
 	public static Color RED = new Color(153, 51, 51);

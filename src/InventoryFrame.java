@@ -5,11 +5,23 @@ import java.awt.event.WindowEvent;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
+/**
+ * InventoryFrame displays the products sold in the store
+ * Items can be filtered using a prefix
+ */
 public class InventoryFrame extends Frame{
 
 	ArrayList<Product> products;
+	JTextArea inventoryTextArea;
 	private final DecimalFormat df = new DecimalFormat("$ 0.00");
 
+	/**
+	 * Constructs an InventoryFrame with the given products and filter 
+	 * and is positioned to the left of its owner
+	 * @param productList the products to be displayed
+	 * @param filter the code filter used to select products to show (must end with * to apply)
+	 * @param owner the Component that constructed this
+	 */
 	public InventoryFrame(ArrayList<Product> productList, String filter, Component owner) {
 		this.products = productList;
 
@@ -18,7 +30,7 @@ public class InventoryFrame extends Frame{
 		c.fill = GridBagConstraints.BOTH;
 		c.insets = new Insets(5, 5, 5, 5);
 
-		JTextArea inventoryTextArea = new JTextArea(19, 80); // actual formula, 19 + no. of items.
+		inventoryTextArea = new JTextArea(20, 80);
 		inventoryTextArea.setFont(new Font("Courier New", Font.PLAIN, 12));
 		inventoryTextArea.setText(this.toTable(filter));
 		inventoryTextArea.setEditable(false);
@@ -41,7 +53,6 @@ public class InventoryFrame extends Frame{
 		inventoryPanel.add(closeButton, c);
 		
 		add(inventoryPanel);
-		
 
 		closeButton.addActionListener( e -> {
 			dispose();
@@ -59,6 +70,11 @@ public class InventoryFrame extends Frame{
 		setVisible(true);
 	}
 
+	/**
+	 * Creates a String formatted as a table with the current data
+	 * @param filter the code filter used to select products to show
+	 * @return a product list formatted as a table
+	 */
 	public String toTable(String filter) {
 		String prefix = (filter.length() > 1 && filter.endsWith("*")) ? filter.substring(0, filter.length()-1) : "";
 		

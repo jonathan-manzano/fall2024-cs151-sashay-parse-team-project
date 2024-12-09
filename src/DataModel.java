@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 /**
  * A model that contains the data and notifies its view
- * @param <T>
+ * @param <T> The data type of DataModel
  */
 public class DataModel<T> {
 	

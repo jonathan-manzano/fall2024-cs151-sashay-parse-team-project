@@ -4,11 +4,18 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.DecimalFormat;
 
-
+/**
+ * ReceiptFrame displays store, invoice, and employee information on a frame
+ */
 public class ReceiptFrame extends Frame{
 	
 	private final DecimalFormat df = new DecimalFormat("$ 0.00");
 	
+	/**
+	 * Constructs a ReceiptFrame with the given Invoice and positioned relative to its owner
+	 * @param invoice the DataModel to display
+	 * @param owner the Component that created ReceiptFrame
+	 */
 	public ReceiptFrame(Invoice invoice, Component owner) {		
 		setLayout(new GridBagLayout());
 		
@@ -18,7 +25,7 @@ public class ReceiptFrame extends Frame{
 		c.fill = GridBagConstraints.BOTH;
 		c.insets = new Insets(5, 5, 5, 5);
 		
-		JTextArea receiptTextArea = new JTextArea(19, 80); // actual formula, 19 + no. of items.
+		JTextArea receiptTextArea = new JTextArea(19 + invoice.getSize(), 80);
 		receiptTextArea.setFont(new Font("Courier New", Font.PLAIN, 12));
 		receiptTextArea.setText(createReceipt(invoice));
 		receiptTextArea.setEditable(false);
@@ -58,6 +65,11 @@ public class ReceiptFrame extends Frame{
 		setVisible(true);
 	}
 	
+	/**
+	 * Creates a String formatted as a table to be displayed in
+	 * @param invoice the data to be displayed
+	 * @return String containing invoice data formatted as a table
+	 */
 	private String createReceipt(Invoice invoice) {
 		Store store = invoice.getStore();
 		
@@ -89,8 +101,7 @@ public class ReceiptFrame extends Frame{
 				+ String.format("%" + (Constants.WIDTH - 2) + "s", "Raw Total: " + df.format(invoice.rawTotal())) + "\n"
 				+ String.format("%" + (Constants.WIDTH - 2) + "s", "Discounted Total: " + df.format(invoice.discountedTotal())) + "\n"
 				+ String.format("%" + (Constants.WIDTH - 2) + "s", "Taxed Total: " + df.format(invoice.taxedTotal())) + "\n"
-				+ String.format("%" + (Constants.WIDTH - 2) + "s", "Grand Total: " + df.format(invoice.grandTotal())) + "\n"
-				+ "\n"
+				+ String.format("%" + (Constants.WIDTH - 2) + "s", "Grand Total: " + df.format(invoice.grandTotal())) + "\n\n"
 				+ String.format("%" + (Constants.WIDTH - 2) + "s", "Your cashier serving you today is " + invoice.getEmployee().getName() + ".") + "\n"
 				+ String.format("%" + (Constants.WIDTH - 2) + "s", "Thank you for shopping!") + "\n\n\n";
 		

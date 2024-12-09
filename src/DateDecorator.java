@@ -1,7 +1,13 @@
-import java.util.ArrayList;
-
+/**
+ * DateDecorator is an interface that decorates a given dateTime string
+ */
 public interface DateDecorator {
 
+	/**
+	 * Converts the given dateTime string to a readable format
+	 * @param dateTime the string to be processed
+	 * @return a date and time string formated as [month day, year hour:minutes:seconds meridiem]
+	 */
 	public static String readableFormat(String dateTime) {
 		String[] dateTimeSplit = dateTime.split("[-T:.]");
 		
@@ -11,7 +17,6 @@ public interface DateDecorator {
 		};
 		
 		String decoratedDateTime = "";
-		
 		
 		int hour = Integer.valueOf(dateTimeSplit[3]);
 		String meridiem = (hour/12 > 0) ? "PM" : "AM";
