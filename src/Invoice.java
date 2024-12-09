@@ -28,6 +28,10 @@ public class Invoice extends DataModel<InvoiceItem>{
 		return store.getDiscount();
 	}
 	
+	public boolean isDiscounted() {
+		return discount;
+	}
+	
 	public boolean applyDiscount() {
 		discount = !(discount);
 		calculateTotals();
@@ -39,7 +43,6 @@ public class Invoice extends DataModel<InvoiceItem>{
 	public void addItem(Product p, int q) {
 		InvoiceItem newItem = new InvoiceItem(p, q);
 		this.data.add(newItem);
-		rawTotal += newItem.getRawTotal();
 		calculateTotals();
 		notifyListeners();
 	}
@@ -49,8 +52,12 @@ public class Invoice extends DataModel<InvoiceItem>{
 		
 		InvoiceItem removedItem = data.get(i - 1);
 		this.data.remove(i - 1);
-		rawTotal -= removedItem.getRawTotal();
-		if (rawTotal < 0) rawTotal = 0;
+		calculateTotals();
+		notifyListeners();
+	}
+	
+	public void clear() {
+		data.clear();
 		calculateTotals();
 		notifyListeners();
 	}
@@ -58,6 +65,12 @@ public class Invoice extends DataModel<InvoiceItem>{
 	private void calculateTotals() {
 		double discountMultiplier = ((100.0 - store.getDiscount()) / 100.0);
 		double taxMultiplier = ((100.0 + store.getTax()) / 100.0);
+		
+		this.rawTotal = 0;
+		
+		for(InvoiceItem item: data) {
+			this.rawTotal += item.getRawTotal();
+		}
 		
 		this.discountedTotal = rawTotal * discountMultiplier;
 		this.taxedTotal = (discount) ? discountedTotal * taxMultiplier : rawTotal * taxMultiplier;
@@ -83,13 +96,17 @@ public class Invoice extends DataModel<InvoiceItem>{
 	public String toTable() {
 		String[] colNames = {"Item No.", "Product", "Quantity", "Total"};
 		
-		String invoiceTable = "";
+		String invoiceTable = "\n";
 		
 		for (int i=0; i<colNames.length; i++) {
 			invoiceTable += StringAligner.centerAlignString(colNames[i], Constants.COLWIDTH);
 		}
 		
-		invoiceTable += "\n";
+		invoiceTable += "\n\n";
+		if (data.size() == 0) {
+			invoiceTable += StringAligner.centerAlignString("Add items to the order\n", Constants.WIDTH);
+		}
+		
 		for (int i=0; i<data.size(); i++) {
 			InvoiceItem item = data.get(i);
 			
@@ -101,10 +118,6 @@ public class Invoice extends DataModel<InvoiceItem>{
 		}
 		
 		return invoiceTable;
-	}
-	
-	public void clear() {
-		data.clear();
 	}
 }
 

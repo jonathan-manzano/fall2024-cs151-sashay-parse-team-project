@@ -14,11 +14,11 @@ public interface DateDecorator {
 		
 		
 		int hour = Integer.valueOf(dateTimeSplit[3]);
-		hour = (hour % 12 == 0) ? 12 : hour % 12; 
 		String meridiem = (hour/12 > 0) ? "PM" : "AM";
+		hour = (hour % 12 == 0) ? 12 : hour % 12; 
 		
 		decoratedDateTime += months[Integer.valueOf(dateTimeSplit[1])-1] + " " + dateTimeSplit[2] + ", " + dateTimeSplit[0] + " ";
-		decoratedDateTime += hour + ":" + dateTimeSplit[4] + " " + meridiem;
+		decoratedDateTime += hour + ":" + dateTimeSplit[4] + ":" + dateTimeSplit[5] + " " + meridiem;
 		
 		return decoratedDateTime;
 	}

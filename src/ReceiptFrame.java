@@ -23,12 +23,28 @@ public class ReceiptFrame extends Frame{
 		receiptTextArea.setText(createReceipt(invoice));
 		receiptTextArea.setEditable(false);
 		
+		JButton closeButton = new JButton("Close");
+		closeButton.setForeground(Constants.RED);
+		
 		JPanel receiptPanel = new JPanel();
 		receiptPanel.setLayout(new GridBagLayout());
 		receiptPanel.setBorder(BorderFactory.createTitledBorder("Receipt"));
-		receiptPanel.add(receiptTextArea);
+		
+		c.gridx = 0;
+		c.gridy = 0;
+		c.gridwidth = 3;
+		receiptPanel.add(receiptTextArea, c);
+		
+		c.gridy = 1;
+		c.gridx = 2;
+		c.fill = GridBagConstraints.NONE;
+		receiptPanel.add(closeButton, c);
 		
 		add(receiptPanel);
+		
+		closeButton.addActionListener( e -> {
+			dispose();
+		});
 		
 		this.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent windowEvent){
@@ -58,7 +74,7 @@ public class ReceiptFrame extends Frame{
 			receiptText += StringAligner.centerAlignString(colNames[i], Constants.COLWIDTH);
 		}
 		
-		receiptText += "\n";
+		receiptText += "\n\n";
 		for (int i=0; i<invoice.getSize(); i++) {
 			InvoiceItem item = invoice.getData(i);
 			

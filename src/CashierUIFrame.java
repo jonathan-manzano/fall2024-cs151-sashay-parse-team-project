@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.text.JTextComponent;
+
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -84,38 +86,44 @@ public class CashierUIFrame extends Frame{
 		
 		// components
 		JLabel employeeLabel = new JLabel("Employee: ");
-		JLabel dateTimeLabel = new JLabel("Date/Time: ");
+		JLabel startDateTimeLabel = new JLabel("Start Date/Time: ");
+		JLabel endDateTimeLabel = new JLabel("End Date/Time: ");
 		JTextField employeeTextField = new JTextField(20);
-		JTextField dateTimeTextField = new JTextField(20);
+		JTextField startDateTimeTextField = new JTextField(20);
+		JTextField endDateTimeTextField = new JTextField(20);
 		JButton endShiftButton = new JButton("End Shift");
 		
 		endShiftButton.setForeground(Constants.RED);
 		
 		employeeTextField.setEditable(false);
-		dateTimeTextField.setEditable(false);
+		startDateTimeTextField.setEditable(false);
+		endDateTimeTextField.setEditable(false);
 		
 		c.gridx = 0;
 		c.gridy = 0;
 		c.gridwidth = 1;
 		shiftInfoPanel.add(employeeLabel, c);
 		
+		c.gridy++;
+		shiftInfoPanel.add(startDateTimeLabel, c);
+		
+		c.gridy++;
+		shiftInfoPanel.add(endDateTimeLabel, c);
+		
+		
 		c.gridx = 1;
 		c.gridy = 0;
 		c.gridwidth = 2;
 		shiftInfoPanel.add(employeeTextField, c);
 		
-		c.gridx = 0;
-		c.gridy = 1;
-		c.gridwidth = 1;
-		shiftInfoPanel.add(dateTimeLabel, c);
+		c.gridy++;
+		shiftInfoPanel.add(startDateTimeTextField, c);
 		
-		c.gridx = 1;
-		c.gridy = 1;
-		c.gridwidth = 2;
-		shiftInfoPanel.add(dateTimeTextField, c);
+		c.gridy++;
+		shiftInfoPanel.add(endDateTimeTextField, c);
 		
 		c.gridx = 2;
-		c.gridy = 2;
+		c.gridy++;
 		c.gridwidth = 1;
 		shiftInfoPanel.add(endShiftButton, c);
 		
@@ -234,10 +242,8 @@ public class CashierUIFrame extends Frame{
         quantityTextField.setEditable(false);
         removeItemButton.setEnabled(false);
         itemNumberTextField.setEditable(false);
-		
-		shiftInfoPanel.setVisible(false);
-		inventoryPanel.setVisible(false);
-		controlPanel.setVisible(false);
+        endShiftButton.setEnabled(false);
+        loadInventoryButton.setEnabled(false);
 		
 		JDialog errorDialog = new JDialog(this);
 		errorDialog.setTitle("Error");
@@ -249,31 +255,52 @@ public class CashierUIFrame extends Frame{
         errorDialog.add(errorMessage);
         errorDialog.setLocationRelativeTo(this);
 		
+        // deletable set data
+        firstNameTextField.setText("Clyde");
+        lastNameTextField.setText("Delgado");
+        productCodeTextField.setText("01145");
+        quantityTextField.setText("1");
+        itemNumberTextField.setText("1");
+        // end of deletable set data
+        
+        
 		startShiftButton.addActionListener( e -> {
 			// initializes employee
 			employee.setFirstName(firstNameTextField.getText());
 			employee.setLastName(lastNameTextField.getText());
 			
-			if (employee.getFirstName().length() != 0 || employee.getLastName().length() != 0) {
+			if (employee.getFirstName().length() != 0 && employee.getLastName().length() != 0) {
 				employeeTextField.setText(employee.getName());
-				dateTimeTextField.setText(DateDecorator.readableFormat(java.time.LocalDateTime.now().toString()));
+				startDateTimeTextField.setText(DateDecorator.readableFormat(java.time.LocalDateTime.now().toString()));
+				endDateTimeTextField.setText("");
+				
+				firstNameTextField.setText("");
+				lastNameTextField.setText("");
 				
 				// opens invoice frame
 				if (invoiceFrame == null ) {
 					invoiceFrame = new InvoiceFrame(invoice);
 				}
 				
+				firstNameTextField.setEditable(false);
+				lastNameTextField.setEditable(false);
+				startShiftButton.setEnabled(false);
 				
-				setVisible(false);
+				endShiftButton.setEnabled(true);
+				toggleComponents(invoiceFrame, true);
 				
-				loginPanel.setVisible(false);
-				shiftInfoPanel.setVisible(true);
-				inventoryPanel.setVisible(true);
-				controlPanel.setVisible(true);
+				if (inventory == null) {
+					loadInventoryButton.setEnabled(true);
+				} else {
+					showInventoryButton.setEnabled(true);
+			        addItemButton.setEnabled(true);
+			        removeItemButton.setEnabled(true);
+			        
+			        productCodeTextField.setEditable(true);
+			        quantityTextField.setEditable(true);
+			        itemNumberTextField.setEditable(true);
+				}
 				
-				pack();
-				setLocationRelativeTo(null);
-				setVisible(true);
 			} else {
 				errorMessage.setText("Name must not be empty.");
 				errorDialog.setLocationRelativeTo(this);
@@ -283,21 +310,30 @@ public class CashierUIFrame extends Frame{
 		
 		endShiftButton.addActionListener( e -> {
 			// clears UI
+			endDateTimeTextField.setText(DateDecorator.readableFormat(java.time.LocalDateTime.now().toString()));
+			
 			// enables login panel
-			invoiceFrame.dispose();
-			invoiceFrame = null;
 			invoice.clear();
+			toggleComponents(invoiceFrame, false);
+			//invoiceFrame.setEnabled(false);
 			
 	        productCodeTextField.setText("");
 	        quantityTextField.setText("");
 	        itemNumberTextField.setText("");
-			
-			loginPanel.setVisible(true);
-			shiftInfoPanel.setVisible(false);
-			inventoryPanel.setVisible(false);
-			controlPanel.setVisible(false);
-			
-			pack();
+	        
+	        endShiftButton.setEnabled(false);
+	        showInventoryButton.setEnabled(false);
+	        addItemButton.setEnabled(false);
+	        removeItemButton.setEnabled(false);
+	        loadInventoryButton.setEnabled(false);
+	        
+	        productCodeTextField.setEditable(false);
+	        quantityTextField.setEditable(false);
+	        itemNumberTextField.setEditable(false);
+	        
+	        firstNameTextField.setEditable(true);
+			lastNameTextField.setEditable(true);
+			startShiftButton.setEnabled(true);
 		});
 		
 		loadInventoryButton.addActionListener( e -> {
@@ -313,9 +349,9 @@ public class CashierUIFrame extends Frame{
 	            for (Product product : products) {
 	                inventory.add(product);
 	            }
-	        } 
-	        catch (Exception exception) 
-	        {
+	            
+	            inventory.setLoaded(true);
+	        } catch (Exception exception) {
 	        	System.out.println(exception.getMessage());
 	        }
 	        
@@ -396,5 +432,21 @@ public class CashierUIFrame extends Frame{
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
+	
+	private static void toggleComponents(Container container, boolean value) {
+        for (Component component : container.getComponents()) {
+        	if (component instanceof JCheckBox || component instanceof JButton) {
+        		component.setEnabled(value);
+            }
+        	
+        	if (component instanceof JTextComponent && ((JTextComponent) component).isEditable()) {
+        		component.setEnabled(value);
+            }
+            
+            if (component instanceof Container) {
+                toggleComponents((Container) component, value);
+            }
+        }
+    }
 	
 }

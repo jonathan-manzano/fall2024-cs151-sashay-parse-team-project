@@ -2,6 +2,7 @@ import java.util.ArrayList;
 
 public class Inventory {
 	ArrayList<Product> products;
+	boolean loaded;
 	
 	public Inventory() {
 		this.products = new ArrayList<Product>();
@@ -21,5 +22,9 @@ public class Inventory {
 		}
 		
 		return null;
+	}
+	
+	public void setLoaded(boolean b) {
+		this.loaded = true;
 	}
 }

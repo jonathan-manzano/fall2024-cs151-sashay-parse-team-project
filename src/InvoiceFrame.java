@@ -57,6 +57,7 @@ public class InvoiceFrame extends Frame{
 		DiscountedTextField discountedPriceTextField = new DiscountedTextField(20, invoiceData);
 		TaxedTotalTextField taxedTotalPriceTextField = new TaxedTotalTextField(20, invoiceData);
 		GrandTotalTextField grandTotalPriceTextField = new GrandTotalTextField(20, invoiceData);
+		JButton clearButton = new JButton("Clear");
 		JButton payPrintReceiptButton = new JButton("Pay and Print Receipt");
 		
 		salesTaxTextField.setEditable(false);
@@ -72,6 +73,8 @@ public class InvoiceFrame extends Frame{
 		grandTotalPriceTextField.setText("$ 0.00");
 		
 		discountedPriceLabel.setForeground(Color.GRAY);
+		clearButton.setForeground(Constants.RED);
+		payPrintReceiptButton.setForeground(Constants.BLUE);
 		
 		salesTaxTextField.setText(invoiceData.getStore().getTax() + "%, " + invoiceData.getStore().getLocation());
 		discountTextField.setText(invoiceData.getDiscount() + "%");
@@ -122,6 +125,9 @@ public class InvoiceFrame extends Frame{
 		c.gridy++;
 		invoiceControlPanel.add(payPrintReceiptButton, c);
 		
+		c.gridx = 0;
+		invoiceControlPanel.add(clearButton, c);
+		
 		// Add Panels to Frame
 		
 		c.gridx = 0;
@@ -133,25 +139,33 @@ public class InvoiceFrame extends Frame{
 		
 		
 		discountCheckBox.addActionListener( e -> {
-			// updates discounted price
 			if (invoiceData.applyDiscount()) {
 				discountedPriceLabel.setForeground(Constants.GREEN);
 			} else {
 				discountedPriceLabel.setForeground(Color.GRAY);
 				discountedPriceTextField.setText("not applied");
 			}
-			
-			// change text color according if discount is applied.
-			// set text to "not applied"
-			
-			pack();
 		});
 		
 		payPrintReceiptButton.addActionListener( e -> {
-			// opens receipt window
-			new ReceiptFrame(invoiceData, this);
-			
-			// clears invoice?
+			if (invoiceData.getSize() != 0) {
+				new ReceiptFrame(invoiceData, this);
+			} else {
+				JDialog errorDialog = new JDialog(this);
+				errorDialog.setTitle("Error");
+		        errorDialog.setSize(300, 100);
+		        errorDialog.setModal(true);
+		        JLabel errorMessage = new JLabel("Add at least one item to proceed to payment.");
+		        errorMessage.setHorizontalAlignment(JLabel.CENTER);
+		        errorMessage.setForeground(Constants.RED);
+		        errorDialog.add(errorMessage);
+		        errorDialog.setLocationRelativeTo(this);
+		        errorDialog.setVisible(true);
+			}
+		});
+		
+		clearButton.addActionListener( e -> {
+			invoiceData.clear();
 		});
 		
 		this.addWindowListener(new WindowAdapter() {
@@ -215,7 +229,12 @@ public class InvoiceFrame extends Frame{
 		}
 		 
 		public void dataChanged(){
-			this.setText(df.format(model.discountedTotal()));
+			if (model.isDiscounted()) {
+				this.setText(df.format(model.discountedTotal()));
+			} else {
+				this.setText("not applied");
+			}
+			
 		};
 	}
 	
